@@ -1,19 +1,18 @@
-add_library(VTXFramework SHARED)
-
-set_target_properties(VTXFramework PROPERTIES
-    VERSION     ${VTXFRAMEWORK_VERSION}
-    SOVERSION   ${VTXFRAMEWORK_SOVERSION}
-    EXPORT_NAME VTXFramework
-)
-target_sources(VTXFramework PRIVATE
+add_library(VTXFramework SHARED
+    mqtt/asyncsubscribe.h mqtt/asyncsubscribe.cpp
     logger/logger.cpp
     logger/logger.h
     http/client/httpclientinterface.h
     http/client/httpclientimpl.h
     http/client/httpclientimpl.cpp
     dbacess/entitymanager.cpp
-    dbacess/entitymanager.h
-    )
+    dbacess/entitymanager.h)
+
+set_target_properties(VTXFramework PROPERTIES
+    VERSION     ${VTXFRAMEWORK_VERSION}
+    SOVERSION   ${VTXFRAMEWORK_SOVERSION}
+    EXPORT_NAME VTXFramework
+)
 
 target_link_libraries(
     VTXFramework
