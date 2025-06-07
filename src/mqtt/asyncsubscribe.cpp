@@ -1,5 +1,6 @@
 #include "asyncsubscribe.h"
 #include "logger/logger.h"
+
 AsyncSubscribe::AsyncSubscribeBuilder::AsyncSubscribeBuilder()
     : host_(""), port_(0),
       client_id_("paho_cpp_async_subscribe"),
@@ -74,16 +75,12 @@ AsyncSubscribe::AsyncSubscribe(const std::string &server_uri,
       qos_(qos),
       n_retry_attempts_(n_retry_attempts),
       topicHandlerMap_(std::move(topicHandlerMap)) {
-    cli = new mqtt::async_client(server_uri_, client_id_);
+    cli = std::make_unique<mqtt::async_client>(server_uri_, client_id_);
     connOpts.set_clean_session(false);
-    cb = new callback(*cli, connOpts, topic_, client_id_, qos_, n_retry_attempts_, topicHandlerMap_);
+    cb = std::make_unique<CallbackImpl>(*cli, connOpts, topic_, client_id_, qos_, n_retry_attempts_, topicHandlerMap_);
     cli->set_callback(*cb);
 }
 
-AsyncSubscribe::~AsyncSubscribe() {
-    delete cb;
-    delete cli;
-}
 
 void AsyncSubscribe::connect() {
     try {

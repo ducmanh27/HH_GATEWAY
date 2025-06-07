@@ -6,7 +6,14 @@ add_library(VTXFramework SHARED
     http/client/httpclientimpl.h
     http/client/httpclientimpl.cpp
     dbacess/entitymanager.cpp
-    dbacess/entitymanager.h)
+    dbacess/entitymanager.h
+    mqtt/asyncpublish.h mqtt/asyncpublish.cpp
+
+    mqtt/callbackimpl.h mqtt/callbackimpl.cpp
+    mqtt/actionlistener.h mqtt/actionlistener.cpp
+
+
+)
 
 set_target_properties(VTXFramework PROPERTIES
     VERSION     ${VTXFRAMEWORK_VERSION}
