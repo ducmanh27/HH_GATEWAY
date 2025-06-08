@@ -11,6 +11,6 @@ add_executable(Database
 )
 target_link_libraries(
     Database
-    VTXFramework
+    MPDFramework
 )
 

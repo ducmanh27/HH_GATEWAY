@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
-set(SAMEPLECONSOLE_VERSION "1.0.0")
-set(SAMEPLECONSOLE_SOVERSION "1.0.0")
+set(HHGATEWAY_VERSION "1.0.0")
+set(HHGATEWAY_SOVERSION "1.0.0")
 project(
-    SamepleConsole
-    VERSION ${SAMEPLECONSOLE_VERSION}
+    HHGateway
+    VERSION ${HHGATEWAY_VERSION}
     LANGUAGES CXX C
 )
 include(FeatureSummary)
@@ -32,7 +32,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # set build library folder
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-
+set(MPDFRAMEWORK_VERSION "1.0.0")
+set(MPDFRAMEWORK_SOVERSION "1")
 
 option(QT6_BUILD "configure build to use Qt6/KF6" ON)
 option(BUILD_TESTS "Build tests" OFF)

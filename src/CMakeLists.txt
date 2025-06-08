@@ -1,4 +1,4 @@
-add_library(VTXFramework SHARED
+add_library(MPDFramework SHARED
     mqtt/asyncsubscribe.h mqtt/asyncsubscribe.cpp
     logger/logger.cpp
     logger/logger.h
@@ -12,17 +12,22 @@ add_library(VTXFramework SHARED
     mqtt/callbackimpl.h mqtt/callbackimpl.cpp
     mqtt/actionlistener.h mqtt/actionlistener.cpp
 
+    controller/gatewaycontroller.h controller/gatewaycontroller.cpp
+    configmanager.h configmanager.cpp
+
+    service/registerservice.h service/registerservice.cpp
+
 
 )
 
-set_target_properties(VTXFramework PROPERTIES
-    VERSION     ${VTXFRAMEWORK_VERSION}
-    SOVERSION   ${VTXFRAMEWORK_SOVERSION}
-    EXPORT_NAME VTXFramework
+set_target_properties(MPDFramework PROPERTIES
+    VERSION     ${MPDFRAMEWORK_VERSION}
+    SOVERSION   ${MPDFRAMEWORK_SOVERSION}
+    EXPORT_NAME MPDFramework
 )
 
 target_link_libraries(
-    VTXFramework
+    MPDFramework
     Qt${QT_VERSION_MAJOR}::Core
      KF${QT_MAJOR_VERSION}::ThreadWeaver
     spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>
@@ -31,7 +36,7 @@ target_link_libraries(
 )
 
 target_include_directories(
-    VTXFramework
+    MPDFramework
     PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/3rdparty)
@@ -43,11 +48,11 @@ endif()
 
 
 include(GNUInstallDirs)
-install(TARGETS VTXFramework
+install(TARGETS MPDFramework
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-target_include_directories(VTXFramework PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>"
+target_include_directories(MPDFramework PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>"
                                                 "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
                                                 )
-target_include_directories(VTXFramework PUBLIC ${PostgreSQL_INCLUDE_DIRS})
+target_include_directories(MPDFramework PUBLIC ${PostgreSQL_INCLUDE_DIRS})

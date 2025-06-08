@@ -2,7 +2,7 @@
 #include <chrono>
 #include "logger/logger.h"
 #include "callbackimpl.h"
-#include "actionlistener.h"
+
 
 const std::string LWT_PAYLOAD {"Last will and testament."};
 const std::string TOPIC_LWT{"xxx"};
@@ -44,12 +44,17 @@ auto AsyncPublish::AsyncPublishBuilder::setTimeout(std::chrono::seconds timeout)
     return *this;
 }
 
-AsyncPublish AsyncPublish::AsyncPublishBuilder::build() {
+std::shared_ptr<AsyncPublish> AsyncPublish::AsyncPublishBuilder::build() {
     if (host_.empty()) {
         throw std::runtime_error("Host must be set before calling build()");
     }
     std::string server_uri = "tcp://" + host_ + ":" + std::to_string(port_);
-    return AsyncPublish(server_uri, client_id_, qos_, retain_, timeout_);
+    // return AsyncPublish(server_uri, client_id_, qos_, retain_, timeout_);
+    return std::shared_ptr<AsyncPublish>(
+               new AsyncPublish(
+                   server_uri, client_id_, qos_, retain_, timeout_
+               )
+           );
 }
 
 // ========== AsyncPublish ==========
@@ -90,7 +95,7 @@ void AsyncPublish::connect() {
     }
     catch (const mqtt::exception &e) {
         LOG_ERROR("Connection error: {}", e.what());
-        throw;
+        // throw;
     }
 }
 

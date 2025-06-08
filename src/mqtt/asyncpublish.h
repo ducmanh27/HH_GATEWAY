@@ -11,10 +11,11 @@
 #include <string.h>
 #include <memory>
 #include "mqtt/async_client.h"
-
-class ActionListener;
+#include <QObject>
+#include "actionlistener.h"
 class CallbackImpl;
-class AsyncPublish {
+class AsyncPublish : public QObject {
+        Q_OBJECT
     public:
         class AsyncPublishBuilder {
             public:
@@ -26,7 +27,7 @@ class AsyncPublish {
                 AsyncPublishBuilder &setQos(int qos);
                 AsyncPublishBuilder &setRetain(bool retain);
                 AsyncPublishBuilder &setTimeout(std::chrono::seconds timeout);
-                AsyncPublish build();
+                std::shared_ptr<AsyncPublish> build();
 
             private:
                 std::string host_ {"localhost"};

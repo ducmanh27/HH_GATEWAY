@@ -9,5 +9,5 @@ add_executable(Logger
 )
 target_link_libraries(
     Logger
-    VTXFramework
+    MPDFramework
 )

@@ -32,7 +32,7 @@ class AsyncSubscribe {
                 AsyncSubscribeBuilder &setQos(int qos);
                 AsyncSubscribeBuilder &setRetryAttempts(int attempts);
 
-                AsyncSubscribe build();
+                std::shared_ptr<AsyncSubscribe> build();
 
             private:
                 std::string host_;
@@ -48,6 +48,8 @@ class AsyncSubscribe {
         ~AsyncSubscribe() = default;
 
         void connect();
+
+        void setTopicHandlerMap(const std::map<std::string, std::function<void (const std::string &)> > &newTopicHandlerMap);
 
     private:
         AsyncSubscribe(const std::string &server_uri,

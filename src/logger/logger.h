@@ -19,41 +19,37 @@
 
 
 
-namespace  spdlog
-{
-class logger;
+namespace  spdlog {
+    class logger;
 }
-namespace mpd
-{
-class Logger
-{
-public:
-    enum LevelEnum
-    {
-        TRACE = 0,
-        DEBUG,
-        INFO,
-        WARN,
-        ERROR,
-        CRITICAL,
-        OFF,
-        N_LEVELS
-    };
-    static Logger* getInstance();
-    void initLogger();
-    void initLogger(std::string appName);
-    void initLogger(std::string appName,
-                    std::string prefixLogDir,
-                    bool isAsync = false);
-    std::shared_ptr<spdlog::logger> getLogger() const;
+namespace mpd {
+    class Logger {
+        public:
+            enum LevelEnum {
+                TRACE = 0,
+                DEBUG,
+                INFO,
+                WARN,
+                ERROR,
+                CRITICAL,
+                OFF,
+                N_LEVELS
+            };
+            static Logger *getInstance();
+            void initLogger();
+            void initLogger(const std::string &appName);
+            void initLogger(const std::string &appName,
+                            const std::string &prefixLogDir,
+                            bool isAsync = false);
+            std::shared_ptr<spdlog::logger> getLogger() const;
 
-private:
-    static Logger* mInstance;
-    static std::mutex mMutex;
-    std::shared_ptr<spdlog::logger> mAppLogger {nullptr};
-    std::string mCurrentLogDir {"."};
-    Logger();
-};
+        private:
+            static Logger *mInstance;
+            static std::mutex mMutex;
+            std::shared_ptr<spdlog::logger> mAppLogger {nullptr};
+            std::string mCurrentLogDir {"."};
+            Logger();
+    };
 }
 
 
