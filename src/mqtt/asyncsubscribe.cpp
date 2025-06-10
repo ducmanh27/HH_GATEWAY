@@ -80,13 +80,13 @@ AsyncSubscribe::AsyncSubscribe(const std::string &server_uri,
       n_retry_attempts_(n_retry_attempts),
       topicHandlerMap_(std::move(topicHandlerMap)) {
     cli = std::make_unique<mqtt::async_client>(server_uri_, client_id_);
-    connOpts.set_clean_session(false);
+    // TODO: need inject option
+    connOpts.set_clean_session(true);
     cb = std::make_unique<CallbackImpl>(*cli, connOpts, topic_, client_id_, qos_, n_retry_attempts_, topicHandlerMap_);
     cli->set_callback(*cb);
 }
 
-void AsyncSubscribe::setTopicHandlerMap(const std::map<std::string, std::function<void (const std::string &)> > &newTopicHandlerMap)
-{
+void AsyncSubscribe::setTopicHandlerMap(const std::map<std::string, std::function<void (const std::string &)> > &newTopicHandlerMap) {
     topicHandlerMap_ = newTopicHandlerMap;
 }
 

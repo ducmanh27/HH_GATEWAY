@@ -24,7 +24,7 @@ void ConfigManager::initSystem() {
            .setHost("localhost")
            .setPort(1883)
            .setClientId("XXX123")
-           .setTopic("#")
+           .setTopic("node/#")
            .setQos(0)
            .setRetryAttempts(5)
            .setTopicHandlerMap(mGatewayController->topicHandlers())
