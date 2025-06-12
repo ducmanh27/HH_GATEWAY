@@ -9,7 +9,10 @@ class RegisterService {
     public:
         RegisterService();
         Reply processRegisterMessage(const std::string &message);
+        std::map<std::string, int> macToNodeId() const;
+
     private:
+        // TODO: need to save in DB
         std::map<std::string, int> mMacToNodeId;
         int mNextNodeId = 1;
 

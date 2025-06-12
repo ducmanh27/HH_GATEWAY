@@ -35,3 +35,8 @@ Reply RegisterService::processRegisterMessage(const std::string &message) {
         return std::make_pair("error", "invalid register message");
     }
 }
+
+std::map<std::string, int> RegisterService::macToNodeId() const
+{
+    return mMacToNodeId;
+}

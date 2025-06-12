@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:12
+    container_name: hbgateway
+    # restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: gatewaydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

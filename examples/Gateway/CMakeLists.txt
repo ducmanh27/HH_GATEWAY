@@ -9,5 +9,5 @@ add_executable(Gateway
 )
 target_link_libraries(
     Gateway
-    MPDFramework
+    MPDCore
 )

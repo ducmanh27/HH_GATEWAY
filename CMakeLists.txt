@@ -32,8 +32,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # set build library folder
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(MPDFRAMEWORK_VERSION "1.0.0")
-set(MPDFRAMEWORK_SOVERSION "1")
+set(MPDCORE_VERSION "1.0.0")
+set(MPDCORE_SOVERSION "1")
 
 option(QT6_BUILD "configure build to use Qt6/KF6" ON)
 option(BUILD_TESTS "Build tests" OFF)
