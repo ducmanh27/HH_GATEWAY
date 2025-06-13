@@ -1,5 +1,6 @@
 #include "asyncsubscribe.h"
 #include "logger/logger.h"
+
 AsyncSubscribe::AsyncSubscribeBuilder::AsyncSubscribeBuilder()
     : host_(""), port_(0),
       client_id_("paho_cpp_async_subscribe"),
@@ -42,7 +43,7 @@ AsyncSubscribe::AsyncSubscribeBuilder &AsyncSubscribe::AsyncSubscribeBuilder::se
     return *this;
 }
 
-AsyncSubscribe AsyncSubscribe::AsyncSubscribeBuilder::build() {
+std::shared_ptr<AsyncSubscribe> AsyncSubscribe::AsyncSubscribeBuilder::build() {
     if (host_.empty()) {
         throw std::runtime_error("Host must be set via setHost() before build().");
     }
@@ -51,18 +52,22 @@ AsyncSubscribe AsyncSubscribe::AsyncSubscribeBuilder::build() {
     }
 
     std::string server_uri = "tcp://" + host_ + ":" + std::to_string(port_);
-    return AsyncSubscribe(server_uri,
-                          topicHandlerMap_,
-                          client_id_,
-                          topic_,
-                          qos_,
-                          n_retry_attempts_
-                         );
+
+    return std::shared_ptr<AsyncSubscribe>(
+               new AsyncSubscribe(
+                   server_uri,
+                   topicHandlerMap_,
+                   client_id_,
+                   topic_,
+                   qos_,
+                   n_retry_attempts_
+               )
+           );
 }
 
 
 AsyncSubscribe::AsyncSubscribe(const std::string &server_uri,
-                               std::map<std::string, std::function<void(const std::string &)>> topicHandlerMap,
+                               std::map<std::string, std::function<void (const std::string &)> > topicHandlerMap,
                                const std::string &client_id,
                                const std::string &topic,
                                int qos,
@@ -74,16 +79,17 @@ AsyncSubscribe::AsyncSubscribe(const std::string &server_uri,
       qos_(qos),
       n_retry_attempts_(n_retry_attempts),
       topicHandlerMap_(std::move(topicHandlerMap)) {
-    cli = new mqtt::async_client(server_uri_, client_id_);
-    connOpts.set_clean_session(false);
-    cb = new callback(*cli, connOpts, topic_, client_id_, qos_, n_retry_attempts_, topicHandlerMap_);
+    cli = std::make_unique<mqtt::async_client>(server_uri_, client_id_);
+    // TODO: need inject option
+    connOpts.set_clean_session(true);
+    cb = std::make_unique<CallbackImpl>(*cli, connOpts, topic_, client_id_, qos_, n_retry_attempts_, topicHandlerMap_);
     cli->set_callback(*cb);
 }
 
-AsyncSubscribe::~AsyncSubscribe() {
-    delete cb;
-    delete cli;
+void AsyncSubscribe::setTopicHandlerMap(const std::map<std::string, std::function<void (const std::string &)> > &newTopicHandlerMap) {
+    topicHandlerMap_ = newTopicHandlerMap;
 }
+
 
 void AsyncSubscribe::connect() {
     try {

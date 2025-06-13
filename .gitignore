@@ -34,3 +34,4 @@ perf.data*
 translations/plugin_meta_data.cpp
 build*/
 /.idea
+.vscode
