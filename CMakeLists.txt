@@ -32,8 +32,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # set build library folder
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(MPDCORE_VERSION "1.0.0")
-set(MPDCORE_SOVERSION "1")
+set(Gateway_VERSION "1.0.0")
+set(Gateway_SOVERSION "1.0.0")
 
 option(QT6_BUILD "configure build to use Qt6/KF6" ON)
 option(BUILD_TESTS "Build tests" OFF)
@@ -92,7 +92,7 @@ add_subdirectory(3rdparty/threadweaver)
 add_subdirectory(3rdparty/libpqxx)
 # lib
 add_subdirectory(src)
-
+add_subdirectory(core)
 add_subdirectory(examples)
 set(PAHO_BUILD_SHARED TRUE)
 set(PAHO_WITH_SSL FALSE)

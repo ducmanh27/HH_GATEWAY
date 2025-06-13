@@ -37,7 +37,7 @@ add_executable(Database
 )
 target_link_libraries(
     Database
-    MPDCore
+    Gateway
 )
 
 add_definitions(-DDATABASE_PGSQL)

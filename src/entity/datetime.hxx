@@ -27,6 +27,8 @@ class datetime {
             return *this;
         }
 
+
+
         unsigned int year() const {
             return year_;
         }
@@ -58,6 +60,19 @@ inline std::ostream &operator<<(std::ostream &os, const datetime &dt) {
            << dt.hour() << ':'
            << dt.minute() << ':'
            << dt.second();
+}
+
+inline bool operator==(const datetime &lhs, const datetime &rhs) {
+    return lhs.year()   == rhs.year()   &&
+           lhs.month()  == rhs.month()  &&
+           lhs.day()    == rhs.day()    &&
+           lhs.hour()   == rhs.hour()   &&
+           lhs.minute() == rhs.minute() &&
+           lhs.second() == rhs.second();
+}
+
+inline bool operator!=(const datetime &lhs, const datetime &rhs) {
+    return !(lhs == rhs);
 }
 
 #endif // DATETIME_HXX

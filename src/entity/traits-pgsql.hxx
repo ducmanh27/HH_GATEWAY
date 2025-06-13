@@ -62,8 +62,8 @@ namespace odb {
                         return;
                     }
 
-                    time_t ts = epoch_diff + static_cast<time_t>(details::endian_traits::ntoh(i));
-                    tm t = *localtime(&ts);
+                    time_t ts = static_cast<time_t>(details::endian_traits::ntoh(i)) + epoch_diff;
+                    tm t = *gmtime(&ts); // dùng gmtime thay cho localtime
 
                     v = datetime(t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
                                  t.tm_hour, t.tm_min, t.tm_sec);
@@ -81,7 +81,7 @@ namespace odb {
                     t.tm_min  = v.minute();
                     t.tm_sec  = v.second();
 
-                    time_t ts = mktime(&t); // local time
+                    time_t ts = timegm(&t); // DÙNG UTC thay vì local time
 
                     i = details::endian_traits::hton(static_cast<long long>(ts - epoch_diff));
                 }

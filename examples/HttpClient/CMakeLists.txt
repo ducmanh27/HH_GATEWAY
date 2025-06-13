@@ -9,5 +9,5 @@ add_executable(HttpClient
 )
 target_link_libraries(
     HttpClient
-    MPDCore
+    Gateway
 )

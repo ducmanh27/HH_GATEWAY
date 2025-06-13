@@ -13,5 +13,5 @@ find_package(Qt6 REQUIRED COMPONENTS Core Test)
 target_link_libraries(tests PRIVATE
     gtest
     gtest_main
-    MPDCore
+    Gateway
     Qt6::Test)

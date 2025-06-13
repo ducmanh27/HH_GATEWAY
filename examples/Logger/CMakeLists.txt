@@ -9,5 +9,5 @@ add_executable(CRUD
 )
 target_link_libraries(
     CRUD
-    MPDCore
+    Gateway
 )
