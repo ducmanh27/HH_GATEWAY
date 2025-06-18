@@ -23,7 +23,7 @@ Reply RegisterService::processRegisterMessage(const std::string &message) {
         else {
             Node newNode;
             newNode.set_mac_address(mac);
-            newNode.set_status("new");
+            newNode.set_status(1);
             newNode.set_room_id(0);
             newNode.set_latitude(0.0);
             newNode.set_longitude(0.0);
@@ -38,7 +38,7 @@ Reply RegisterService::processRegisterMessage(const std::string &message) {
             // Refetch to get auto-generated ID
             std::shared_ptr<Node> savedNode = mNodeDAO->findByMacAddress(mac);
             nodeId = static_cast<int>(savedNode->id());
-
+            emit hasNewNodeRegister();
             LOG_INFO("MAC address {} registered with new nodeId {}", mac, nodeId);
         }
 

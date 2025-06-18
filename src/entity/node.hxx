@@ -12,7 +12,7 @@ class Node {
     public:
         Node() = default;
 
-        Node(const std::string &status,
+        Node(int status,
              int room_id,
              double latitude,
              double longitude,
@@ -35,7 +35,7 @@ class Node {
             return id_;
         }
 
-        const std::string &status() const {
+        int status() const {
             return status_;
         }
 
@@ -68,7 +68,7 @@ class Node {
         }
 
         // Setters
-        void set_status(const std::string &status) {
+        void set_status(int status) {
             status_ = status;
         }
 
@@ -110,7 +110,7 @@ class Node {
 #pragma db id auto
         unsigned long long id_;
 
-        std::string status_;
+        int status_;
         int room_id_;
         double latitude_;
         double longitude_;

@@ -28,7 +28,7 @@ withTransaction(std::shared_ptr<odb::database> db, Func func) {
     t.commit();
 }
 
-NodeDAOImpl::NodeDAOImpl(shared_ptr<odb::database> db)
+NodeDAOImpl::NodeDAOImpl(std::unique_ptr<odb::database> db)
     : db_(std::move(db)) {}
 
 void NodeDAOImpl::save(Node theNode) {
@@ -73,7 +73,7 @@ vector<Node> NodeDAOImpl::findAll() {
     return result;
 }
 
-vector<Node> NodeDAOImpl::findByStatus(string status) {
+vector<Node> NodeDAOImpl::findByStatus(int status) {
     transaction t(db_->begin());
     vector<Node> result;
     odb::result<Node> r(db_->query<Node>(odb::query<Node>::status == status));
@@ -92,6 +92,16 @@ vector<Node> NodeDAOImpl::findByStatus(string status) {
 void NodeDAOImpl::update(std::shared_ptr<Node> node) {
     transaction t(db_->begin());
     db_->update(*node);
+    t.commit();
+}
+
+void NodeDAOImpl::updateAll(const std::vector<Node> &nodes) {
+    odb::transaction t(db_->begin());
+
+    for (const auto &node : nodes) {
+        db_->update(node);
+    }
+
     t.commit();
 }
 

@@ -33,34 +33,32 @@
 #endif
 
 inline std::unique_ptr<odb::database>
-create_database(int& argc, char* argv[])
-{
+create_database(int &argc, char *argv[]) {
     using namespace std;
     using namespace odb::core;
 
-    if (argc > 1 && argv[1] == string("--help"))
-    {
+    if (argc > 1 && argv[1] == string("--help")) {
         cout << "Usage: " << argv[0] << " [options]" << endl
              << "Options:" << endl;
 
-#if defined(DATABASE_MYSQL)
+        #if defined(DATABASE_MYSQL)
         odb::mysql::database::print_usage(cout);
-#elif defined(DATABASE_SQLITE)
+        #elif defined(DATABASE_SQLITE)
         odb::sqlite::database::print_usage(cout);
-#elif defined(DATABASE_PGSQL)
+        #elif defined(DATABASE_PGSQL)
         odb::pgsql::database::print_usage(cout);
-#elif defined(DATABASE_ORACLE)
+        #elif defined(DATABASE_ORACLE)
         odb::oracle::database::print_usage(cout);
-#elif defined(DATABASE_MSSQL)
+        #elif defined(DATABASE_MSSQL)
         odb::mssql::database::print_usage(cout);
-#endif
+        #endif
 
         exit(0);
     }
 
-#if defined(DATABASE_MYSQL)
+    #if defined(DATABASE_MYSQL)
     unique_ptr<database> db(new odb::mysql::database(argc, argv));
-#elif defined(DATABASE_SQLITE)
+    #elif defined(DATABASE_SQLITE)
     unique_ptr<database> db(
         new odb::sqlite::database(
             argc, argv, false, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
@@ -80,31 +78,30 @@ create_database(int& argc, char* argv[])
 
         c->execute("PRAGMA foreign_keys=ON");
     }
-#elif defined(DATABASE_PGSQL)
+    #elif defined(DATABASE_PGSQL)
     unique_ptr<database> db(new odb::pgsql::database(argc, argv));
-#elif defined(DATABASE_ORACLE)
+    #elif defined(DATABASE_ORACLE)
     unique_ptr<database> db(new odb::oracle::database(argc, argv));
-#elif defined(DATABASE_MSSQL)
+    #elif defined(DATABASE_MSSQL)
     unique_ptr<database> db(
         new odb::mssql::database(argc, argv, false, "TrustServerCertificate=yes"));
-#endif
+    #endif
 
     return db;
 }
 
 
 inline std::unique_ptr<odb::database>
-create_database(const std::string& _user,
-                const std::string& _password,
-                const std::string& _db,
-                const std::string& _host,
-                unsigned int _port)
-{
+create_database(const std::string &_user,
+                const std::string &_password,
+                const std::string &_db,
+                const std::string &_host,
+                unsigned int _port) {
     using namespace std;
     using namespace odb::core;
-#if defined(DATABASE_MYSQL)
+    #if defined(DATABASE_MYSQL)
     unique_ptr<database> db(new odb::mysql::database(_user, _password, _db, _host, _port));
-#elif defined(DATABASE_SQLITE)
+    #elif defined(DATABASE_SQLITE)
     unique_ptr<database> db(
         new odb::sqlite::database(
             argc, argv, false, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
@@ -124,14 +121,14 @@ create_database(const std::string& _user,
 
         c->execute("PRAGMA foreign_keys=ON");
     }
-#elif defined(DATABASE_PGSQL)
+    #elif defined(DATABASE_PGSQL)
     unique_ptr<database> db(new odb::pgsql::database(_user, _password, _db, _host, _port));
-#elif defined(DATABASE_ORACLE)
+    #elif defined(DATABASE_ORACLE)
     unique_ptr<database> db(new odb::oracle::database(argc, argv));
-#elif defined(DATABASE_MSSQL)
+    #elif defined(DATABASE_MSSQL)
     unique_ptr<database> db(
         new odb::mssql::database(_user, _password, _db, _host, _port));
-#endif
+    #endif
 
     return db;
 }

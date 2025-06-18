@@ -28,6 +28,7 @@ class datetime {
             tp_ = std::chrono::system_clock::from_time_t(tt);
         }
         static datetime now();
+        std::time_t to_time_t() const;
         // Constructor from system_clock::time_point
         explicit datetime(const std::chrono::system_clock::time_point &tp)
             : tp_(tp)
@@ -51,7 +52,7 @@ operator<< (std::ostream &os, const datetime &dt) {
     return os << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
 }
 
-// ✅ Definition of static now()
+// Definition of static now()
 inline datetime datetime::now() {
     using namespace std::chrono;
     auto tp = system_clock::now();
@@ -67,6 +68,10 @@ inline datetime datetime::now() {
                tm_ptr->tm_min,
                tm_ptr->tm_sec
            );
+}
+
+inline std::time_t datetime::to_time_t() const {
+    return std::chrono::system_clock::to_time_t(tp_);
 }
 // --- End of new datetime class ---
 #endif // DATETIME_HXX

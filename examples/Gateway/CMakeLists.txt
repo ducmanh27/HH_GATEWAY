@@ -11,3 +11,4 @@ target_link_libraries(
     HHGateway
     Gateway
 )
+target_compile_definitions(HHGateway PRIVATE DATABASE_PGSQL)
