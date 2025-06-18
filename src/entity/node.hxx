@@ -18,14 +18,16 @@ class Node {
              double longitude,
              bool is_keep_alive,
              const datetime &created_time,
-             const datetime &updated_time)
+             const datetime &updated_time,
+             const std::string &mac_address)
             : status_(status),
               room_id_(room_id),
               latitude_(latitude),
               longitude_(longitude),
               is_keep_alive_(is_keep_alive),
               created_time_(created_time),
-              updated_time_(updated_time)
+              updated_time_(updated_time),
+              mac_address_(mac_address)
         {}
 
         // Getters
@@ -61,6 +63,10 @@ class Node {
             return updated_time_;
         }
 
+        const std::string &mac_address() const {
+            return mac_address_;
+        }
+
         // Setters
         void set_status(const std::string &status) {
             status_ = status;
@@ -94,6 +100,10 @@ class Node {
             id_ = id;
         }
 
+        void set_mac_address(const std::string &mac_address) {
+            mac_address_ = mac_address;
+        }
+
     private:
         friend class odb::access;
 
@@ -104,9 +114,11 @@ class Node {
         int room_id_;
         double latitude_;
         double longitude_;
-        bool is_keep_alive_ {false};
+        bool is_keep_alive_;
         datetime created_time_;
         datetime updated_time_;
+#pragma db unique
+        std::string mac_address_;
 };
 
 #endif // NODE_HXX

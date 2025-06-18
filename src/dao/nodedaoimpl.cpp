@@ -44,6 +44,22 @@ std::shared_ptr<Node> NodeDAOImpl::findById(int id) {
     return result;
 }
 
+std::shared_ptr<Node> NodeDAOImpl::findByMacAddress(const std::string &mac) {
+    transaction t(db_->begin());
+
+    odb::result<Node> r = db_->query<Node>(odb::query<Node>::mac_address == mac);
+
+    if (!r.empty()) {
+        auto it = r.begin();
+        std::shared_ptr<Node> result = std::make_shared<Node>(*it);
+        t.commit();
+        return result;
+    }
+
+    t.commit();
+    return nullptr;
+}
+
 vector<Node> NodeDAOImpl::findAll() {
     transaction t(db_->begin());
     vector<Node> result;

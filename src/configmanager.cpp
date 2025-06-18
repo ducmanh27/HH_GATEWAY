@@ -1,11 +1,15 @@
 #include "configmanager.h"
+#include <odb/pgsql/database.hxx>
+#include <chrono>
+
+#include "dao/nodedaoimpl.h"
 #include "controller/gatewaycontroller.h"
 #include "service/registerservice.h"
 #include "mqtt/asyncsubscribe.h"
 #include "mqtt/asyncpublish.h"
 #include "service/registerservice.h"
 #include "mqtt/asyncpublish.h"
-#include <chrono>
+
 using namespace std::chrono_literals;
 ConfigManager &ConfigManager::getInstance() {
     static ConfigManager instance; // Initial once, thread-safe from C++11
@@ -13,8 +17,16 @@ ConfigManager &ConfigManager::getInstance() {
 }
 
 void ConfigManager::initSystem() {
+    try {
+        mDb = std::make_shared<odb::pgsql::database>("admin", "secret", "gatewaydb", "localhost", 5432);
+    }
+    catch (const odb::exception &e) {
+        LOG_ERROR("[ODB Exception] {}", e.what());
+    }
+    // DAO
+    mNodeDAO = std::make_shared<NodeDAOImpl>(mDb);
     // Service
-    mRegisterService = std::make_shared<RegisterService>();
+    mRegisterService = std::make_shared<RegisterService>(mNodeDAO);
 
     // Controller
     mGatewayController = std::make_shared<GatewayController>(mRegisterService);

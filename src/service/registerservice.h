@@ -3,11 +3,11 @@
 #include <map>
 #include <string>
 #include "json.hpp"
-
+class NodeDAO;
 using Reply = std::pair<std::string, std::string>;
 class RegisterService {
     public:
-        RegisterService();
+        explicit RegisterService(std::shared_ptr<NodeDAO> nodeDAO);
         Reply processRegisterMessage(const std::string &message);
         std::map<std::string, int> macToNodeId() const;
 
@@ -15,7 +15,7 @@ class RegisterService {
         // TODO: need to save in DB
         std::map<std::string, int> mMacToNodeId;
         int mNextNodeId = 1;
-
+        std::shared_ptr<NodeDAO> mNodeDAO {nullptr};
 };
 
 #endif // REGISTERSERVICE_H
