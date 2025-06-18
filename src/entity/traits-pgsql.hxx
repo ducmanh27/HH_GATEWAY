@@ -44,46 +44,45 @@ namespace odb {
                 }
         };
 
-        // Mapping datetime <-> PostgreSQL TIMESTAMP (seconds since 2000-01-01)
+        // --- Corrected datetime traits ---
         template <>
         class value_traits<datetime, id_timestamp> {
             public:
                 using value_type = datetime;
                 using query_type = datetime;
-                using image_type = long long;
+                using image_type = long long; // PostgreSQL TIMESTAMP uses 64-bit integer for microseconds
 
-                // PostgreSQL epoch (2000-01-01 00:00:00 UTC)
-                static const time_t epoch_diff = 946684800;
-
+                // PostgreSQL epoch (2000-01-01 00:00:00 UTC) as time_point
+                // Using std::chrono::system_clock::from_time_t to convert time_t to time_point
+                static std::chrono::system_clock::time_point get_pgsql_epoch_tp() {
+                    static const std::chrono::system_clock::time_point pgsql_epoch_tp =
+                        std::chrono::system_clock::from_time_t(946684800); // Unix epoch seconds to 2000-01-01 00:00:00 UTC
+                    return pgsql_epoch_tp;
+                }
                 static void
                 set_value(datetime &v, const long long &i, bool is_null) {
                     if (is_null) {
-                        v = datetime(0, 0, 0, 0, 0, 0);
+                        v = datetime(std::chrono::system_clock::time_point());
                         return;
                     }
 
-                    time_t ts = static_cast<time_t>(details::endian_traits::ntoh(i)) + epoch_diff;
-                    tm t = *gmtime(&ts); // dùng gmtime thay cho localtime
+                    // 'i' is microseconds since PostgreSQL epoch (2000-01-01 00:00:00 UTC)
+                    auto duration_from_pgsql_epoch = std::chrono::microseconds(details::endian_traits::ntoh(i));
 
-                    v = datetime(t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
-                                 t.tm_hour, t.tm_min, t.tm_sec);
+                    // Add this duration to the PostgreSQL epoch time point
+                    v = datetime(get_pgsql_epoch_tp() + duration_from_pgsql_epoch);
                 }
 
                 static void
                 set_image(long long &i, bool &is_null, const datetime &v) {
                     is_null = false;
 
-                    tm t {};
-                    t.tm_year = v.year() - 1900;
-                    t.tm_mon  = v.month() - 1;
-                    t.tm_mday = v.day();
-                    t.tm_hour = v.hour();
-                    t.tm_min  = v.minute();
-                    t.tm_sec  = v.second();
+                    // Calculate duration from PostgreSQL epoch to the given datetime
+                    auto duration_since_pgsql_epoch = v.to_time_point() - get_pgsql_epoch_tp();
 
-                    time_t ts = timegm(&t); // DÙNG UTC thay vì local time
-
-                    i = details::endian_traits::hton(static_cast<long long>(ts - epoch_diff));
+                    // Convert to microseconds
+                    i = details::endian_traits::hton(
+                            std::chrono::duration_cast<std::chrono::microseconds>(duration_since_pgsql_epoch).count());
                 }
         };
 
