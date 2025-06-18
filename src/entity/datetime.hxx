@@ -3,76 +3,52 @@
 
 #include <iostream>
 #include <odb/core.hxx>
-
-#pragma db value type("TIMESTAMP")
+#include <chrono> // For std::chrono
+#include <iomanip> // For std::put_time
+// --- New datetime class ---
+#pragma db value type("TIMESTAMP") // Map to TIMESTAMP in PostgreSQL
 class datetime {
     public:
-        datetime() = default;
+        // Default constructor required by ODB
+        datetime() : tp_(std::chrono::system_clock::time_point()) {}
 
+        // Constructor from time components
         datetime(unsigned int year, unsigned int month, unsigned int day,
-                 unsigned int hour = 0, unsigned int minute = 0, unsigned int second = 0)
-            : year_(year), month_(month), day_(day),
-              hour_(hour), minute_(minute), second_(second)
+                 unsigned int hour, unsigned int minute, unsigned int second) {
+            std::tm t{};
+            t.tm_year = year - 1900;
+            t.tm_mon = month - 1;
+            t.tm_mday = day;
+            t.tm_hour = hour;
+            t.tm_min = minute;
+            t.tm_sec = second;
+            t.tm_isdst = -1; // Let mktime determine DST
+
+            std::time_t tt = std::mktime(&t);
+            tp_ = std::chrono::system_clock::from_time_t(tt);
+        }
+
+        // Constructor from system_clock::time_point
+        explicit datetime(const std::chrono::system_clock::time_point &tp)
+            : tp_(tp)
         {}
 
-        datetime &operator=(const datetime &other) {
-            if (this != &other) {
-                year_ = other.year_;
-                month_ = other.month_;
-                day_ = other.day_;
-                hour_ = other.hour_;
-                minute_ = other.minute_;
-                second_ = other.second_;
-            }
-            return *this;
-        }
-
-
-
-        unsigned int year() const {
-            return year_;
-        }
-        unsigned int month() const {
-            return month_;
-        }
-        unsigned int day() const {
-            return day_;
-        }
-        unsigned int hour() const {
-            return hour_;
-        }
-        unsigned int minute() const {
-            return minute_;
-        }
-        unsigned int second() const {
-            return second_;
+        std::chrono::system_clock::time_point
+        to_time_point() const {
+            return tp_;
         }
 
     private:
-        unsigned int year_{0}, month_{0}, day_{0};
-        unsigned int hour_{0}, minute_{0}, second_{0};
+        std::chrono::system_clock::time_point tp_;
 };
 
-inline std::ostream &operator<<(std::ostream &os, const datetime &dt) {
-    return os << dt.year() << '-'
-           << dt.month() << '-'
-           << dt.day() << ' '
-           << dt.hour() << ':'
-           << dt.minute() << ':'
-           << dt.second();
-}
+inline std::ostream &
+operator<< (std::ostream &os, const datetime &dt) {
+    std::time_t tt = std::chrono::system_clock::to_time_t(dt.to_time_point());
+    std::tm tm = *std::localtime(&tt); // Or std::gmtime(&tt) for UTC
 
-inline bool operator==(const datetime &lhs, const datetime &rhs) {
-    return lhs.year()   == rhs.year()   &&
-           lhs.month()  == rhs.month()  &&
-           lhs.day()    == rhs.day()    &&
-           lhs.hour()   == rhs.hour()   &&
-           lhs.minute() == rhs.minute() &&
-           lhs.second() == rhs.second();
+    // Format the output
+    return os << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
 }
-
-inline bool operator!=(const datetime &lhs, const datetime &rhs) {
-    return !(lhs == rhs);
-}
-
+// --- End of new datetime class ---
 #endif // DATETIME_HXX
