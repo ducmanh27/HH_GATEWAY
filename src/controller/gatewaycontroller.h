@@ -10,11 +10,12 @@
 class AsyncPublish;
 class AsyncSubscribe;
 class RegisterService;
-
+class KeepAliveService;
 class GatewayController  : public QObject {
         Q_OBJECT
     public:
-        explicit GatewayController(std::shared_ptr<RegisterService> registerService);
+        explicit GatewayController(std::shared_ptr<RegisterService> registerService,
+                                   std::shared_ptr<KeepAliveService> keepAliveService);
 
         std::map<std::string, std::function<void(const std::string &)>> topicHandlers() const;
 
@@ -23,12 +24,12 @@ class GatewayController  : public QObject {
         void registerSensorDataHandler();
         void registerRequestHandler();
         void registerReplyHandler();
-
+        std::shared_ptr<KeepAliveService> mKeepAliveService {nullptr};
         std::shared_ptr<RegisterService> mRegisterService {nullptr};
         std::map<std::string, std::function<void(const std::string &)>> mTopicHandlers;
-        std::unique_ptr<QTimer> mTimerKeepAlive {nullptr};
     signals:
         void hasReplyMessage(const std::string &topic, const std::string &msg);
+        void hasRequestMessage(const std::string &topic, const std::string &msg);
 
 };
 

@@ -5,27 +5,18 @@
 #include "logger/logger.h"
 #include "json.hpp"
 #include <chrono>
+#include "service/keepaliveservice.h"
 using namespace std::chrono_literals;
 GatewayController::GatewayController(
-    std::shared_ptr<RegisterService> registerService)
-    : mRegisterService(registerService) {
+    std::shared_ptr<RegisterService> registerService, std::shared_ptr<KeepAliveService> keepAliveService)
+    : mRegisterService(registerService), mKeepAliveService(keepAliveService) {
     registerHandlers();
-    mTimerKeepAlive = std::make_unique<QTimer>(this);
-    connect(mTimerKeepAlive.get(), &QTimer::timeout, this, [this]() {
-        auto nodes = mRegisterService->macToNodeId();
-        for (auto node : nodes) {
-            // check if status == active && chưa được bản tin keep alive
-            // nếu không thì set nó về inactive
-            // phía lúc nhận bản tin keepALiveReply thì cần reset lại biến này
-            nlohmann::json msg;
-            msg["macAddress"] = node.first;
-            msg["nodeId"] = node.second;
-            msg["messageType"] = "keepAlive";
-            emit hasReplyMessage("gateway/request", msg.dump());
-        }
-    });
-    mTimerKeepAlive->setInterval(15s);
-    mTimerKeepAlive->start();
+
+    connect(mKeepAliveService.get(), &KeepAliveService::hasKeepAliveMessage,
+            this, &GatewayController::hasReplyMessage);
+
+    connect(mRegisterService.get(), &RegisterService::hasNewNodeRegister,
+            mKeepAliveService.get(), &KeepAliveService::getAllNode);
 }
 
 void GatewayController::registerHandlers() {
@@ -36,7 +27,6 @@ void GatewayController::registerHandlers() {
 
 void GatewayController::registerSensorDataHandler() {
     mTopicHandlers["node/sensor_data"] = [](const std::string & payload) {
-        LOG_INFO("Payload xxx: {}", payload);
 
     };
 }
@@ -61,17 +51,20 @@ void GatewayController::registerRequestHandler() {
 
 void GatewayController::registerReplyHandler() {
     mTopicHandlers["node/reply"] = [this](const std::string & payload) {
-        std::string messageType;
+
         try {
-            messageType = nlohmann::json::parse(payload)["messageType"];
+            auto j = nlohmann::json::parse(payload);
+            if (j.contains("messageType") && j["messageType"].is_string() && j["messageType"] == "keepAliveReply") {
+                if (j.contains("macAddress") && j.contains("nodeId")) {
+                    mKeepAliveService->handleReplyKeepAlive(j["nodeId"], j["macAddress"]);
+                }
+            }
         }
         catch (const nlohmann::json::parse_error &e) {
             LOG_ERROR("JSON parse error: {}", e.what());
             return ;
         }
-        if (messageType == "keepAliveReply") {
-            LOG_DEBUG("[KeepAlive] Message: {}", nlohmann::json::parse(payload).dump());
-        }
+
 
     };
 }

@@ -1,5 +1,6 @@
 set(ODB_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/entity/node.hxx
+    ${CMAKE_CURRENT_SOURCE_DIR}/entity/sensordata.hxx
 )
 set(ODB_GENERATED_SOURCES "")
 foreach(header ${ODB_SOURCES})
@@ -38,6 +39,9 @@ add_library(Gateway SHARED
     dao/nodedaoimpl.cpp
     dao/nodedao.h
     ${ODB_GENERATED_SOURCES}
+    entity/sensordata.hxx
+    service/collectorservice.h service/collectorservice.cpp
+    service/keepaliveservice.h service/keepaliveservice.cpp
 )
 set_target_properties(Gateway PROPERTIES
     VERSION     ${GATEWAY_VERSION}

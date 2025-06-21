@@ -2,15 +2,13 @@
 #define CONFIGMANAGER_H
 #include <QObject>
 #include <memory>
-namespace odb {
-    namespace pgsql {
-        class database;
-    }
-}
+#include "entity/database.hxx"
+
 class AsyncPublish;
 class AsyncSubscribe;
 class GatewayController;
 class RegisterService;
+class KeepAliveService;
 class NodeDAO;
 class ConfigManager : public QObject {
         Q_OBJECT
@@ -26,11 +24,12 @@ class ConfigManager : public QObject {
 
     private:
         ConfigManager();
-        std::shared_ptr<odb::pgsql::database> mDb {nullptr};
+        std::unique_ptr<odb::database> mDb {nullptr};
         std::shared_ptr<NodeDAO> mNodeDAO {nullptr};
         std::shared_ptr<AsyncPublish> mPub {nullptr};
         std::shared_ptr<AsyncSubscribe> mSub{nullptr};
         std::shared_ptr<RegisterService> mRegisterService {nullptr};
+        std::shared_ptr<KeepAliveService> mKeepAliveService {nullptr};
         std::shared_ptr<GatewayController> mGatewayController {nullptr};
 };
 

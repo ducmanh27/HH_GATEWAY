@@ -13,19 +13,21 @@ namespace odb {
 
 class NodeDAOImpl : public NodeDAO {
     public:
-        explicit NodeDAOImpl(std::shared_ptr<odb::database> db);
+        explicit NodeDAOImpl(std::unique_ptr<odb::database> db);
 
         void save(Node theNode) override;
         std::shared_ptr<Node> findById(int id) override;
         std::vector<Node> findAll() override;
-        std::vector<Node> findByStatus(std::string status) override;
+        std::vector<Node> findByStatus(int status) override;
         std::shared_ptr<Node> findByMacAddress(const std::string &mac) override;
         void update(std::shared_ptr<Node> node) override;
+        void updateAll(const std::vector<Node> &nodes) override;
         void deleteNodeById(int id) override;
         int deleteAll() override;
 
     private:
-        std::shared_ptr<odb::database> db_;
+        std::unique_ptr<odb::database> db_;
+
 };
 
 #endif // NODEDAOIMPL_H

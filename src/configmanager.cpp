@@ -8,6 +8,7 @@
 #include "mqtt/asyncsubscribe.h"
 #include "mqtt/asyncpublish.h"
 #include "service/registerservice.h"
+#include "service/keepaliveservice.h"
 #include "mqtt/asyncpublish.h"
 
 using namespace std::chrono_literals;
@@ -18,18 +19,20 @@ ConfigManager &ConfigManager::getInstance() {
 
 void ConfigManager::initSystem() {
     try {
-        mDb = std::make_shared<odb::pgsql::database>("admin", "secret", "gatewaydb", "localhost", 5432);
+        mDb = create_database("admin", "secret", "gatewaydb", "localhost", 5432);
     }
     catch (const odb::exception &e) {
         LOG_ERROR("[ODB Exception] {}", e.what());
+        exit(0);
     }
     // DAO
-    mNodeDAO = std::make_shared<NodeDAOImpl>(mDb);
+    mNodeDAO = std::make_shared<NodeDAOImpl>(std::move(mDb));
     // Service
     mRegisterService = std::make_shared<RegisterService>(mNodeDAO);
-
+    mKeepAliveService = std::make_shared<KeepAliveService>(mNodeDAO);
     // Controller
-    mGatewayController = std::make_shared<GatewayController>(mRegisterService);
+    mGatewayController = std::make_shared<GatewayController>(mRegisterService,
+                                                             mKeepAliveService);
 
     // Transport
     mSub = AsyncSubscribe::AsyncSubscribeBuilder()
@@ -50,6 +53,7 @@ void ConfigManager::initSystem() {
            .setTimeout(3s)
            .build();
     connect(mGatewayController.get(), &GatewayController::hasReplyMessage, mPub.get(), &AsyncPublish::publish);
+    connect(mGatewayController.get(), &GatewayController::hasRequestMessage, mPub.get(), &AsyncPublish::publish);
     mSub->connect();
     mPub->connect();
 }
