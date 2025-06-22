@@ -14,4 +14,6 @@ target_link_libraries(tests PRIVATE
     gtest
     gtest_main
     Gateway
-    Qt6::Test)
+    Qt6::Test
+  )
+

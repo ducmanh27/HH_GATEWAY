@@ -16,6 +16,7 @@ set_target_properties(Core PROPERTIES
 )
 find_package(ODB REQUIRED)
 find_package(Boost REQUIRED COMPONENTS date_time serialization)
+find_package(OpenSSL REQUIRED)
 target_link_libraries(
     Core
     Qt${QT_VERSION_MAJOR}::Core
@@ -23,6 +24,8 @@ target_link_libraries(
     spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>
     libpqxx::pqxx
     PahoMqttCpp::paho-mqttpp3
+    OpenSSL::SSL
+    OpenSSL::Crypto
 )
 
 target_include_directories(

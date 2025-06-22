@@ -70,7 +70,8 @@ find_package(
 #     COMPONENTS ThreadWeaver
 #     REQUIRED
 # )
-
+# For http client SSL
+add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)
 # logging
 set(SPDLOG_BUILD_SHARED ON)
 add_subdirectory(3rdparty/spdlog)
@@ -98,3 +99,4 @@ set(PAHO_BUILD_SHARED TRUE)
 set(PAHO_WITH_SSL FALSE)
 set(PAHO_WITH_MQTT_C FALSE)
 add_subdirectory(3rdparty/paho.mqtt.cpp)
+
